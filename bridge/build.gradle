@@ -39,5 +39,9 @@ android {
     dependencies {
         //compile project(':chronostouch') // uncomment me to build locally
         compile "mil.nga.giat:chronostouch:1.0.0" // comment me to build locally
+        //compile project(':sdk') // uncomment me to build locally
+        compile "mil.nga.giat.mage:sdk:4.0.4" // comment me to build locally
+        compile 'com.google.code.gson:gson:2.3'
+        compile 'com.android.support:support-v4:23.0.1'
     }
 }

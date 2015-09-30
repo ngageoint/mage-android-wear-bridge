@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/save_gesture"
+          android:title="Save"
+          android:showAsAction="always" />
+    <item android:id="@+id/delete_gesture"
+          android:title="Delete"
+          android:showAsAction="always" />
+</menu>
