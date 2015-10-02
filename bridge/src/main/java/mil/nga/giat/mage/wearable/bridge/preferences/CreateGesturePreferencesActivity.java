@@ -39,6 +39,8 @@ public class CreateGesturePreferencesActivity extends Activity {
 	protected String mGestureType;
 	protected String mGestureName;
 
+	protected ArrayAdapter<String> mSpinnerArrayAdapter;
+
 	protected MenuItem mSaveGestureMenuItem;
 
 	protected Boolean mIsEdit = false;
@@ -52,26 +54,18 @@ public class CreateGesturePreferencesActivity extends Activity {
 
 		TextView gestureNameInput = (TextView) findViewById(R.id.gesture_name);
 		Spinner typeSpinner = (Spinner) findViewById(R.id.type_spinner);
-		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getTypes().toArray(new String[getTypes().size()]));
-		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		typeSpinner.setAdapter(spinnerArrayAdapter);
+		mSpinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getTypes().toArray(new String[getTypes().size()]));
+		mSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		typeSpinner.setAdapter(mSpinnerArrayAdapter);
 		final GestureOverlayView gestureOverlay = (GestureOverlayView) findViewById(R.id.gestures_overlay);
 
 		ChronosGesture cg = (ChronosGesture)getIntent().getParcelableExtra("chronosgesture");
 		if(cg != null) {
 			mIsEdit = true;
 			mGestureName = cg.getChronosData().getName();
-			gestureNameInput.setText(mGestureName);
 			mGestureType = cg.getChronosData().getType();
-			typeSpinner.setSelection(spinnerArrayAdapter.getPosition(mGestureType));
 			mGesture = cg.getGesture();
-			gestureOverlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-				@Override
-				public void onGlobalLayout() {
-					gestureOverlay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-					gestureOverlay.setGesture(mGesture);
-				}
-			});
+			populateControls();
 			originalGesture = new ChronosGesture(mGesture, new ChronosData(mGesture.getID(), mGestureName, mGestureType));
 		}
 
@@ -246,8 +240,9 @@ public class CreateGesturePreferencesActivity extends Activity {
 		super.onSaveInstanceState(outState);
 
 		if (mGesture != null) {
-			outState.putParcelable("gesture", mGesture);
 			outState.putString("gestureName", mGestureName);
+			outState.putString("gestureType", mGestureType);
+			outState.putParcelable("gesture", mGesture);
 		}
 	}
 
@@ -256,20 +251,31 @@ public class CreateGesturePreferencesActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 
 		mGestureName = savedInstanceState.getString("gestureName");
-		if (mGestureName != null) {
+		mGestureType = savedInstanceState.getString("gestureType");
+		mGesture = savedInstanceState.getParcelable("gesture");
+		populateControls();
+
+		toggleCreateButton();
+	}
+
+	protected void populateControls() {
+		if(mGestureName != null) {
 			TextView gestureNameInput = (TextView) findViewById(R.id.gesture_name);
 			gestureNameInput.setText(mGestureName);
 		}
-
-		mGesture = savedInstanceState.getParcelable("gesture");
+		if(mGestureType != null && mSpinnerArrayAdapter != null) {
+			Spinner typeSpinner = (Spinner) findViewById(R.id.type_spinner);
+			typeSpinner.setSelection(mSpinnerArrayAdapter.getPosition(mGestureType));
+		}
 		if (mGesture != null) {
-			final GestureOverlayView overlay = (GestureOverlayView) findViewById(R.id.gestures_overlay);
-			overlay.post(new Runnable() {
-				public void run() {
-					overlay.setGesture(mGesture);
+			final GestureOverlayView gestureOverlay = (GestureOverlayView) findViewById(R.id.gestures_overlay);
+			gestureOverlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+				@Override
+				public void onGlobalLayout() {
+					gestureOverlay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+					gestureOverlay.setGesture(mGesture);
 				}
 			});
 		}
-		toggleCreateButton();
 	}
 }
