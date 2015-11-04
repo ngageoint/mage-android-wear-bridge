@@ -1,6 +1,6 @@
 # MAGE Android Wear Bridge
 
-10/02/2015
+11/04/2015
 
 This adds functionality to the MAGE client that allows it to interact with the [MAGE Android Wear app](https://github.com/ngageoint/mage-android-wear).
 
@@ -11,12 +11,11 @@ Depends on the [MAGE Android SDK](https://github.com/ngageoint/mage-android-sdk)
 ## How to Build
 
 ### Build
-
+```bash
 ./gradlew clean
-
 ./gradlew assembleDebug
-
 ./gradlew uploadArchives
+```
 
 ## Pull Requests
 
